@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ main ]
   schedule:
-    - cron: '0 22 * * 1,3,5'
+    - cron: '0 22 * * *'
 
 jobs:
 
@@ -33,11 +33,11 @@ jobs:
         with:
           context: ./ 
           file: ./Dockerfile
-          # builder: ${{ steps.buildx.outputs.name }}
+          builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/loia-dev-base:latest
-          # cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/loia-dev-base:buildcache
-          # cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/loia-dev-base:buildcache,mode=max
+          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/loia-dev-base:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/loia-dev-base:buildcache,mode=max
       -
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
