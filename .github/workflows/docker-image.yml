@@ -19,7 +19,7 @@ jobs:
           - tag: latest
             dockerfile: Dockerfile
           - tag: aur
-            dockerfile: Dockerfile_AUR
+            dockerfile: aur.Dockerfile
 
     steps:
       - name: Checkout
