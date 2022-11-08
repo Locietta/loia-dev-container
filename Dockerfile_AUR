@@ -1,0 +1,6 @@
+FROM greyltc/archlinux-aur:paru
+LABEL maintainer="locietta@qq.com"
+
+RUN echo "Server = https://mirror.rackspace.com/archlinux/$repo/os/$arch" >> /etc/pacman.d/mirrorlist\
+    && aur-install cmake ninja git llvm-git python yarn\
+    && paru -Sccd --noconfirm && rm -rf /var/cache/pacman/pkg/*

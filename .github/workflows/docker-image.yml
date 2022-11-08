@@ -12,6 +12,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    strategy: 
+      matrix:
+        include:
+          - tag: latest
+            dockerfile: Dockerfile
+          - tag: aur
+            dockerfile: Dockerfile_AUR
+
     steps:
       - name: Checkout
         uses: actions/checkout@main
@@ -28,11 +37,11 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: ./
-          file: ./Dockerfile
+          file: ./${{ matrix.dockerfile }}
           builder: ${{ steps.buildx.outputs.name }}
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/loia-dev-base:latest
-          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/loia-dev-base:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/loia-dev-base:buildcache,mode=max
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/loia-dev-base:${{ matrix.tag }}
+          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/loia-dev-base:${{ matrix.tag }}-buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/loia-dev-base:${{ matrix.tag }}-buildcache,mode=max
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
