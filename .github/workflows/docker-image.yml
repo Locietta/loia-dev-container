@@ -19,7 +19,9 @@ jobs:
           - tag: latest
             dockerfile: Dockerfile
           - tag: aur
-            dockerfile: aur.Dockerfile
+            dockerfile: aur.dockerfile
+          - tag: debian
+            dockerfile: debian.dockerfile
 
     steps:
       - name: Checkout
@@ -37,7 +39,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: ./
-          file: ./${{ matrix.dockerfile }}
+          file: dockerfiles/${{ matrix.dockerfile }}
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/loia-dev-base:${{ matrix.tag }}
