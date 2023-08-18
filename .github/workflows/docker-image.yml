@@ -17,13 +17,11 @@ jobs:
       matrix:
         include:
           - tag: latest
-            dockerfile: Dockerfile
+            dockerfile: dockerfile
           - tag: aur
             dockerfile: aur.dockerfile
           - tag: debian
             dockerfile: debian.dockerfile
-          - tag: llvm-git
-            dockerfile: llvm-git.dockerfile
 
     steps:
       - name: Checkout
