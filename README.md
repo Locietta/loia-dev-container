@@ -1,2 +1,5 @@
 # loia-dev-container
-personal dev container based on Arch's Docker image
+
+Personal dev containers. Used for standard development and some CI process on Github Action.
+
+Mostly based on Arch and Debian images.
