@@ -1,12 +1,56 @@
-FROM archlinux/archlinux:base-devel
-LABEL maintainer="locietta@qq.com"
+FROM archlinux/archlinux:base-devel as arch
+LABEL maintainer="<locietta@qq.com>"
 
+RUN sudo pacman-key --init
+
+RUN pacman -Syu --needed --noconfirm git
+
+# create AUR user
+ARG user=aur
+RUN useradd --create-home $user \
+  && echo "$user ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers.d/$user
+USER $user
+WORKDIR /home/$user
+
+# install paru
+RUN git clone https://aur.archlinux.org/paru.git \
+  && cd paru \
+  && makepkg -si --needed --noconfirm \
+  && cd
+
+# build pacman-static
+RUN paru -Sy --noconfirm pacman-static
+
+# build gpg
+RUN git clone https://github.com/skeeto/lean-static-gpg gnupg
+RUN cd gnupg && ./build.sh
+
+# add archlinuxcn repo
 RUN echo $'[archlinuxcn]\n\
 Server = https://mirrors.ustc.edu.cn/archlinuxcn/$arch\n\
 Server = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/$arch' >> /etc/pacman.conf\
     && pacman -Sy --noconfirm archlinuxcn-keyring \
-    && pacman-key --init && pacman-key --populate archlinuxcn\
-    && pacman -Syy --noconfirm git python\
-    && pacman -Scc --noconfirm && rm -rf /var/cache/pacman/pkg/* && rm -rf /var/lib/pacman/sync/*\
-    && rm -rf /usr/share/info/* && rm -rf /usr/share/man/* && rm -rf /usr/share/doc/*\
-    && rm -rf /tmp/*
+    && pacman-key --populate archlinuxcn
+
+USER root
+
+FROM debian:unstable-slim as debian
+
+RUN apt-get update && apt-get install -y bash-static
+
+FROM scratch
+
+# copy over everything pacman needs
+COPY --from=arch /usr/bin/pacman-static /usr/bin/pacman
+COPY --from=arch /etc/pacman.conf /etc/pacman.conf
+COPY --from=arch /etc/pacman.d /etc/pacman.d
+COPY --from=arch /var/lib/pacman/sync /var/lib/pacman/sync
+COPY --from=arch /home/aur/gnupg/gnupg/bin/gpg /usr/bin/gpg
+COPY --from=arch /etc/ca-certificates/extracted/tls-ca-bundle.pem \
+  /etc/ssl/certs/ca-certificates.crt
+
+# copy over bash-static from debian
+COPY --from=debian /bin/bash-static /usr/bin/bash
+
+# set shell path
+SHELL ["/usr/bin/bash", "-c"]
