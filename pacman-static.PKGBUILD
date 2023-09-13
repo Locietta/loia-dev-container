@@ -1,0 +1,330 @@
+# Maintainer: Eli Schwartz <eschwartz@archlinux.org>
+
+# All my PKGBUILDs are managed at https://github.com/eli-schwartz/pkgbuilds
+
+pkgname=pacman-static
+pkgver=6.0.2
+_cares_ver=1.18.1
+_nghttp2_ver=1.50.0
+_curlver=7.86.0
+_sslver=3.0.7
+_zlibver=1.2.13
+_xzver=5.2.7
+_bzipver=1.0.8
+_zstdver=1.5.2
+_libarchive_ver=3.6.1
+_gpgerrorver=1.46
+_libassuanver=2.5.5
+_gpgmever=1.18.0
+pkgrel=3
+pkgdesc="Statically-compiled pacman (to fix or install systems without libc)"
+arch=('i486' 'i686' 'pentium4' 'x86_64' 'arm' 'armv6h' 'armv7h' 'aarch64')
+url="https://www.archlinux.org/pacman/"
+license=('GPL')
+depends=('pacman')
+makedepends=('meson' 'musl' 'kernel-headers-musl')
+options=('!emptydirs')
+
+# pacman
+source=("https://sources.archlinux.org/other/pacman/pacman-${pkgver}.tar.xz"{,.sig})
+validpgpkeys=('6645B0A8C7005E78DB1D7864F99FFE0FEAE999BD'  # Allan McRae <allan@archlinux.org>
+              'B8151B117037781095514CA7BBDFFC92306B1121') # Andrew Gregory (pacman) <andrew@archlinux.org>
+# nghttp2
+source+=("https://github.com/nghttp2/nghttp2/releases/download/v$_nghttp2_ver/nghttp2-$_nghttp2_ver.tar.xz")
+# c-ares
+source+=("https://c-ares.haxx.se/download/c-ares-${_cares_ver}.tar.gz"{,.asc})
+validpgpkeys+=('27EDEAF22F3ABCEB50DB9A125CC908FDB71E12C2') # Daniel Stenberg <daniel@haxx.se>
+# curl
+source+=("https://curl.haxx.se/download/curl-${_curlver}.tar.gz"{,.asc})
+# openssl
+source+=("https://www.openssl.org/source/openssl-${_sslver}.tar.gz"{,.asc}
+         "ca-dir.patch"
+         "openssl-3.0.7-no-atomic.patch")
+validpgpkeys+=('8657ABB260F056B1E5190839D9C4D26D0E604491'  # Matt Caswell <matt@openssl.org>
+              '7953AC1FBC3DC8B3B292393ED5E9E43F7DF9EE8C'   # Matt Caswell <matt@openssl.org>
+              'A21FAB74B0088AA361152586B8EF1A6BA9DA2D5C')  # Tom�? Mr�z <tm@t8m.info>
+# zlib
+source+=("https://zlib.net/fossils/zlib-${_zlibver}.tar.gz")
+validpgpkeys+=('5ED46A6721D365587791E2AA783FCD8E58BCAFBA') # Mark Adler <madler@alumni.caltech.edu>
+# xz
+source+=("https://tukaani.org/xz/xz-${_xzver}.tar.gz"{,.sig})
+validpgpkeys+=('3690C240CE51B4670D30AD1C38EE757D69184620') # Lasse Collin <lasse.collin@tukaani.org>
+# bzip2
+source+=("https://sourceware.org/pub/bzip2/bzip2-${_bzipver}.tar.gz"{,.sig})
+validpgpkeys+=('EC3CFE88F6CA0788774F5C1D1AA44BE649DE760A') # Mark Wielaard <mark@klomp.org>
+# zstd
+source+=("https://github.com/facebook/zstd/releases/download/v${_zstdver}/zstd-${_zstdver}.tar.zst"{,.sig})
+validpgpkeys+=('4EF4AC63455FC9F4545D9B7DEF8FE99528B52FFD') # Zstandard Release Signing Key <signing@zstd.net>
+# libgpg-error
+source+=("https://gnupg.org/ftp/gcrypt/libgpg-error/libgpg-error-${_gpgerrorver}.tar.bz2"{,.sig})
+validpgpkeys+=('D8692123C4065DEA5E0F3AB5249B39D24F25E3B6'  # Werner Koch
+               '031EC2536E580D8EA286A9F22071B08A33BD3F06'  # NIIBE Yutaka (GnuPG Release Key) <gniibe@fsij.org>
+               '6DAA6E64A76D2840571B4902528897B826403ADA') # "Werner Koch (dist signing 2020)"
+# libassuan
+source+=("https://gnupg.org/ftp/gcrypt/libassuan/libassuan-${_libassuanver}.tar.bz2"{,.sig})
+# gpgme
+source+=("https://www.gnupg.org/ftp/gcrypt/gpgme/gpgme-${_gpgmever}.tar.bz2"{,.sig})
+validpgpkeys+=('AC8E115BF73E2D8D47FA9908E98E9B2D19C6C8BD') #  Niibe Yutaka (GnuPG Release Key)
+# libarchive
+source+=("https://github.com/libarchive/libarchive/releases/download/v${_libarchive_ver}/libarchive-${_libarchive_ver}.tar.xz"{,.asc})
+validpgpkeys+=('A5A45B12AD92D964B89EEE2DEC560C81CEC2276E') # Martin Matuska <mm@FreeBSD.org>
+
+sha512sums=('9d76fb58c3a50e89a4b92b1f9e3bfdecca3f69e05022ea88fbd34f9df540c4fc688ad4f8b27e77eedb791aa682c27037abe65c789c6d9ee393bae5b620c3df13'
+            'SKIP'
+            'c2f7f14972cb268a85966f2bd26ac515fa61d9cf6b6bcaa5cffc04f02a18abf116b15537eb4dfbdfa79e7b1472de7034dfdbce7a082cc5b23627d87e2939e529'
+            '1276ec0799916019f8c0af6b55a139701bd15e0ca4a00811d07963893978bc96c107b980f0fd49f81aa70bc8b3b8cd671195ba357c390772d4c2c5643c50c5a5'
+            'SKIP'
+            'b2d30b4d145a3621862a0f5e6378b5099ba92f4be6e92f4e070ec1299fc5eacba851bf993efd613b366fb81642f3f5cccb6e02adcd472dccc9c5e65c1a51812c'
+            'SKIP'
+            '6c2bcd1cd4b499e074e006150dda906980df505679d8e9d988ae93aa61ee6f8c23c0fa369e2edc1e1a743d7bec133044af11d5ed57633b631ae479feb59e3424'
+            'SKIP'
+            'b1873dbb7a49460b007255689102062756972de5cc2d38b12cc9f389b6be412da6797579b1acd3717a8cd2ee118fd9801b94e55f063d4328f050f0876a5eb53c'
+            'b5887ea77417fae49b6cb1e9fa782d3021f268d5219701d87a092235964f73fa72a31428b630445517f56f2bb69dcbbb24119ef9dbf8b4e40a753369a9f9a16f'
+            '99f0e843f52290e6950cc328820c0f322a4d934a504f66c7caa76bd0cc17ece4bf0546424fc95135de85a2656fed5115abb835fd8d8a390d60ffaf946c8887ad'
+            '06329fdbd1d897aa99dc96900c6246457288c586d02bb4869a92dd2f97973f95acb3a2fa9598a20613ea029f816836a8e3b65e36fec2b807b5e7553141429ab9'
+            'SKIP'
+            '083f5e675d73f3233c7930ebe20425a533feedeaaa9d8cc86831312a6581cefbe6ed0d08d2fa89be81082f2a5abdabca8b3c080bf97218a1bd59dc118a30b9f3'
+            'SKIP'
+            'bf8183dcb42ac306c120836fdd03a13f3f41de72f697a928a7795008acc86e2533ce42f6b554bde7f1ca834f1a0282f8371585b9129ea88441f3f8dd49f1e923'
+            'SKIP'
+            'b06223bb2b0f67d3db5d0d9ab116361a0eda175d4667352b5c0941408d37f2b0ba8e507297e480ccebb88cbba9d0a133820b896914b07d264fb3edaac7b8c99d'
+            'SKIP'
+            '70117f77aa43bbbe0ed28da5ef23834c026780a74076a92ec775e30f851badb423e9a2cb9e8d142c94e4f6f8a794988c1b788fd4bd2271e562071adf0ab16403'
+            'SKIP'
+            'c0cb0b337d017793a15dd477a7f5eaef24587fcda3d67676bf746bb342398d04792c51abe3c26ae496e799c769ce667d4196d91d86e8a690d02c6718c8f6b4ac'
+            'SKIP'
+            '2e5a72edc468080c0e8f29e07d9c33826ffb246fa040ec42399bedeecf698b7555f69ffd15057ad79c0f50cd4926d43174599d99632b1b99ec6cd159c43a70b8'
+            'SKIP')
+b2sums=('648f62307e413cb352ed92e92df1ace510c1fc5e9ddd254baeef071e89cb7dae1786a95d29c5f69e8b03b1a8cfe3cd65671588dc362c8d3b281c092393aad54c'
+        'SKIP'
+        'ae5d89a1f7287a3f2f2b9380ff5e9efb7f0646950d15ed281f268dafc65eb34ad7e34610333b4c98db8a657034ea462e7f1eda80ff2e94a918751dbb112c9a2a'
+        'c03a572726c6bbb24a3e4773673d0c87f4833bb9582aed57a424eea8c965beb6e232f502b61922b124d37403d91ebfefe0db7373673fc22e0d752c4e5036eb07'
+        'SKIP'
+        '874805e4b100130ffa7196fb1ea7ab6ee38a00607194c7a6543a7cef904f08506811d6d7f95939985b0765f3a1789a3a3727c8429e050f47c373ca8ae4e6a8dc'
+        'SKIP'
+        '141881071fa62f056c514e7c653a61c59cc45fe951ec094041e23fb5e619133b7ebbfe31cd8203969c9d8842b8cbc10ec58da67cc181761a11c1cfdd0869df9a'
+        'SKIP'
+        '928c0cb15cca44bb7f194db9f95985f6c50aacd3e22fe2eb60ece26ed76469289f10d303c645a48407f3d6435ac66f25dd3c4cbc56fdc5dfd9ea2566feda9ff8'
+        'c72172cf57389718b4722c3482ddaf9c2fc02aafe391c68edeb92d41fd6345a0a98f6fd63ddf01b33fe59a7a3f270ff1ccad432feba578b7b7e0170cd1dea7ef'
+        '73cd65f287d662a988287205b74e93d516d6a74e18555d0f1a2777557e73e81249b45341c687fe97e65406a7210f77b8914ed146bac517d3fcc4c9fcb16546d3'
+        '5363c5d0403e041c6d2e35b5d3321feeb8e63b8556496373c820975850b50e28e0da903446a49ba516fd9f40e0101dd39cfa9a9b8dd143c9849c84a715bb5d7b'
+        'SKIP'
+        '22ab3acd84f4db8c3d6f59340c252faedfd4447cea00dafbd652e65b6cf8a20adf6835c22e58563004cfafdb15348c924996230b4b23cae42da5e25eeac4bdad'
+        'SKIP'
+        '513e4526a92bcb59416b3457d186a30e554f9e0cf21d7114eb3e9fbcbd9d662c8d95cf0b06237f6fe3f756862c63de0aa146d6a23cb4111c16e6459608d115f1'
+        'SKIP'
+        '6748c463256b7d0a05fe89a63c5f3abda1975d861c35821248664f2f09cd2273ef619d12408b6107a99519939ca7214f492e705c29f52f7bbdc422237281c1ca'
+        'SKIP'
+        '24952e97c757b97c387ab4c2c4bf7b040f2874e9326c129805c7f5326fa14d80e083b0842e336a635531a2c8d4a66d428c816bae6b175f1c4518add1ffa3554d'
+        'SKIP'
+        'a071b839eb75455378514f003920cd387320e9fae416e71151cf6ac1b4a058b58ed054450b79e3eeaf820ff5324ea14efa003612867477b7379a776942d62be6'
+        'SKIP'
+        'e7b79e97545dabeac164069e87adbd2081d3bd75c22f80b3797c6e487a477b3f6347b6fc14c76668eb69f2f2e5dcdd5a33a694e0a292ce426b8d0d93435218cf'
+        'SKIP')
+
+export LDFLAGS="$LDFLAGS -static"
+export CC=musl-gcc
+export CXX=musl-gcc
+
+# https://www.openwall.com/lists/musl/2014/11/05/3
+# fstack-protector and musl do not get along but only on i686
+if [[ $CARCH = i686 || $CARCH = pentium4 || $CARCH = i486 ]]; then
+    # silly build systems have configure checks or buildtime programs that don't CFLAGS but do do CC
+    export CC="musl-gcc -fno-stack-protector"
+    export CXX="musl-gcc -fno-stack-protector"
+    export CFLAGS="${CFLAGS/-fstack-protector-strong/}"
+    export CXXFLAGS="${CXXFLAGS/-fstack-protector-strong/}"
+fi
+
+# to enable func64 interface in musl for 64-bit file system functions
+export CFLAGS+=' -D_LARGEFILE64_SOURCE'
+export CXXFLAGS+=' -D_LARGEFILE64_SOURCE'
+
+# keep using xz-compressed packages, because one use of the package is to
+# recover on systems with broken zstd support in libarchive
+[[ $PKGEXT = .pkg.tar.zst ]] && PKGEXT=.pkg.tar.xz
+
+build() {
+    export PKG_CONFIG_PATH="${srcdir}"/temp/usr/lib/pkgconfig
+    export PATH="${srcdir}/temp/usr/bin:${PATH}"
+
+    # openssl
+    cd "${srcdir}"/openssl-${_sslver}
+    patch -Np1 -i "${srcdir}/ca-dir.patch"
+    case ${CARCH} in
+        x86_64)
+            openssltarget='linux-x86_64'
+            optflags='enable-ec_nistp_64_gcc_128'
+            ;;
+        pentium4)
+            openssltarget='linux-elf'
+            optflags=''
+            ;;
+        i686)
+            openssltarget='linux-elf'
+            optflags='no-sse2'
+            ;;
+        i486)
+            openssltarget='linux-elf'
+            optflags='386 no-threads'
+            ;;
+        arm|armv6h|armv7h)
+            openssltarget='linux-armv4'
+            optflags=''
+            # special patch to ommit -latomic when installing pkgconfig files
+            patch -Np1 -i "${srcdir}/openssl-3.0.7-no-atomic.patch"
+            ;;
+        aarch64)
+            openssltarget='linux-aarch64'
+            optflags='no-afalgeng'
+            ;;
+    esac
+    # mark stack as non-executable: http://bugs.archlinux.org/task/12434
+    ./Configure --prefix="${srcdir}"/temp/usr \
+                --openssldir=/etc/ssl \
+                --libdir=lib \
+                -static \
+                no-ssl3-method \
+                ${optflags} \
+                "${openssltarget}" \
+                "-Wa,--noexecstack ${CPPFLAGS} ${CFLAGS} ${LDFLAGS}"
+    make build_libs
+    make install_dev
+
+    # xz
+    cd "${srcdir}"/xz-${_xzver}
+    ./configure --prefix="${srcdir}"/temp/usr \
+                --disable-shared
+    cd src/liblzma
+    make
+    make install
+
+    # bzip2
+    cd "${srcdir}"/bzip2-${_bzipver}
+    sed -i "s|-O2|${CFLAGS}|g;s|CC=gcc|CC=${CC}|g" Makefile
+    make libbz2.a
+    install -Dvm644 bzlib.h "${srcdir}"/temp/usr/include/
+    install -Dvm644 libbz2.a "${srcdir}"/temp/usr/lib/
+
+    cd "${srcdir}"/zstd-${_zstdver}/lib
+    make libzstd.a
+    make PREFIX="${srcdir}"/temp/usr install-pc install-static install-includes
+
+    # zlib
+    cd "${srcdir}/"zlib-${_zlibver}
+    ./configure --prefix="${srcdir}"/temp/usr \
+                --static
+    make libz.a
+    make install
+
+    # libarchive
+    cd "${srcdir}"/libarchive-${_libarchive_ver}
+    CPPFLAGS="-I${srcdir}/temp/usr/include" CFLAGS="-L${srcdir}/temp/usr/lib" \
+        ./configure --prefix="${srcdir}"/temp/usr \
+                    --without-xml2 \
+                    --without-nettle \
+                    --disable-{bsdtar,bsdcat,bsdcpio} \
+                    --without-expat \
+                    --disable-shared
+    make
+    make install-{includeHEADERS,libLTLIBRARIES,pkgconfigDATA,includeHEADERS}
+
+    # nghttp2
+    cd "${srcdir}"/nghttp2-${_nghttp2_ver}
+    ./configure --prefix="${srcdir}"/temp/usr \
+        --disable-shared \
+        --disable-examples \
+        --disable-python-bindings
+    make -C lib
+    make -C lib install
+
+    # c-ares
+    # needed for curl, which does not use it in the repos
+    # but seems to be needed for static builds
+    cd "${srcdir}"/c-ares-${_cares_ver}
+    ./configure --prefix="${srcdir}"/temp/usr \
+        --disable-shared
+    make -C src/lib
+    make install-pkgconfigDATA
+    make -C src/lib install
+    make -C include install
+
+    # curl
+    cd "${srcdir}"/curl-${_curlver}
+    # c-ares is not detected via pkg-config :(
+    ./configure --prefix="${srcdir}"/temp/usr \
+                --disable-shared \
+                --with-ca-bundle=/etc/ssl/certs/ca-certificates.crt \
+                --disable-{dict,gopher,imap,imaps,ldap,ldaps,manual,pop3,pop3s,rtsp,scp,sftp,smb,smbs,smtp,smtps,telnet,tftp} \
+                --without-{brotli,libidn2,librtmp,libssh2} \
+                --disable-libcurl-option \
+                --with-openssl \
+                --enable-ares="${srcdir}"/temp/usr
+    make -C lib
+    make install-pkgconfigDATA
+    make -C lib install
+    make -C include install
+
+    # libgpg-error
+    cd "${srcdir}"/libgpg-error-${_gpgerrorver}
+    ./configure --prefix="${srcdir}"/temp/usr \
+        --disable-shared
+    make -C src
+    make -C src install-{binSCRIPTS,libLTLIBRARIES,nodist_includeHEADERS,pkgconfigDATA}
+
+    # libassuan
+    cd "${srcdir}"/libassuan-${_libassuanver}
+    ./configure --prefix="${srcdir}"/temp/usr \
+        --disable-shared
+    make -C src
+    make -C src install-{binSCRIPTS,libLTLIBRARIES,nodist_includeHEADERS,pkgconfigDATA}
+
+    # gpgme
+    cd "${srcdir}"/gpgme-${_gpgmever}
+    ./configure --prefix="${srcdir}"/temp/usr \
+        --disable-fd-passing \
+        --disable-shared \
+        --disable-languages
+    make -C src
+    make -C src install-{binSCRIPTS,libLTLIBRARIES,nodist_includeHEADERS,pkgconfigDATA}
+
+    # ew libtool
+    rm "${srcdir}"/temp/usr/lib/lib*.la
+
+    # Finally, it's a pacman!
+    mkdir -p "${srcdir}"/pacman-${pkgver}/builddir
+    cd "${srcdir}"/pacman-${pkgver}/builddir
+    meson setup \
+        --prefix=/usr \
+        --includedir=lib/pacman/include \
+        --libdir=lib/pacman/lib \
+        --buildtype=plain \
+        -Dbuildstatic=true \
+        -Ddefault_library=static \
+        -Ddoc=disabled \
+        -Ddoxygen=disabled \
+        -Dldconfig=/usr/bin/ldconfig \
+        -Dscriptlet-shell=/usr/bin/bash \
+        ..
+    ninja
+}
+
+package() {
+    cd "${srcdir}"/pacman-${pkgver}/builddir
+    DESTDIR="${pkgdir}" ninja install
+
+    rm -rf "${pkgdir}"/usr/share "${pkgdir}"/etc
+    for exe in "${pkgdir}"/usr/bin/*; do
+        if [[ -f ${exe} && $(head -c4 "${exe}") = $'\x7fELF' ]]; then
+            mv "${exe}" "${exe}"-static
+        else
+            rm "${exe}"
+        fi
+    done
+
+    cp -a "${srcdir}"/temp/usr/{bin,include,lib} "${pkgdir}"/usr/lib/pacman/
+    sed -i "s@${srcdir}/temp/usr@/usr/lib/pacman@g" \
+        "${pkgdir}"/usr/lib/pacman/lib/pkgconfig/*.pc \
+        "${pkgdir}"/usr/lib/pacman/bin/*
+}
+

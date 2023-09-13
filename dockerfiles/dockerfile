@@ -5,6 +5,13 @@ RUN sudo pacman-key --init
 
 RUN pacman -Syu --needed --noconfirm git
 
+# add archlinuxcn repo
+RUN echo $'[archlinuxcn]\n\
+Server = https://mirrors.ustc.edu.cn/archlinuxcn/$arch\n\
+Server = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/$arch' >> /etc/pacman.conf\
+    && pacman -Sy --noconfirm archlinuxcn-keyring \
+    && pacman-key --populate archlinuxcn
+
 # create AUR user
 ARG user=aur
 RUN useradd --create-home $user \
@@ -12,25 +19,17 @@ RUN useradd --create-home $user \
 USER $user
 WORKDIR /home/$user
 
-# install paru
-RUN git clone https://aur.archlinux.org/paru.git \
-  && cd paru \
-  && makepkg -si --needed --noconfirm \
+# build pacman-static
+COPY ./pacman-static.PKGBUILD /home/$user/PKGBUILD
+RUN git clone https://aur.archlinux.org/pacman-static.git --depth 1 \
+  && cd pacman-static \
+  && mv ../PKGBUILD . \
+  && makepkg -si --needed --noconfirm --skippgpcheck\
   && cd
 
-# build pacman-static
-RUN paru -Sy --noconfirm pacman-static
-
 # build gpg
-RUN git clone https://github.com/skeeto/lean-static-gpg gnupg
+RUN git clone https://github.com/skeeto/lean-static-gpg gnupg --depth 1
 RUN cd gnupg && ./build.sh
-
-# add archlinuxcn repo
-RUN echo $'[archlinuxcn]\n\
-Server = https://mirrors.ustc.edu.cn/archlinuxcn/$arch\n\
-Server = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/$arch' >> /etc/pacman.conf\
-    && pacman -Sy --noconfirm archlinuxcn-keyring \
-    && pacman-key --populate archlinuxcn
 
 USER root
 
