@@ -53,3 +53,5 @@ COPY --from=debian /bin/bash-static /usr/bin/bash
 
 # set shell path
 SHELL ["/usr/bin/bash", "-c"]
+
+CMD ["/usr/bin/bash"]
