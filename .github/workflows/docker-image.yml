@@ -24,6 +24,8 @@ jobs:
             dockerfile: debian.dockerfile
           - tag: node
             dockerfile: node.dockerfile
+          - tag: minimal
+            dockerfile: minimal.dockerfile
 
     steps:
       - name: Checkout
