@@ -9,6 +9,8 @@ RUN pacman -Syu --needed --noconfirm git
 RUN echo $'[archlinuxcn]\n\
 Server = https://mirrors.ustc.edu.cn/archlinuxcn/$arch\n\
 Server = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/$arch' >> /etc/pacman.conf\
+    && pacman-key --init \
+    && pacman-key --lsign-key "farseerfc@archlinux.org" \
     && pacman -Sy --noconfirm archlinuxcn-keyring \
     && pacman-key --populate archlinuxcn
 
